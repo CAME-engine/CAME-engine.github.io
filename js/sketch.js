@@ -30,13 +30,12 @@ let ratio = 16/9;
 let buffering;
 let stopwatchFunctions = new StopwatchFunctions();
 let fuel = 1;
-var options = {
+let options = {
   id: 480865808,
   width: window.innerWidth / 2,
   muted: true
 };
 let player = new Vimeo.Player('fuel_panel', options);
-
 
 function preload() {
   myFont = loadFont('js/digital-7.ttf');
@@ -95,32 +94,9 @@ function setup() {
   });
 }
 
-function playPause() {
-  if (paused) {
-    paused = false;
-    player.play();
-  }else {
-    paused = true;
-    player.pause();
-  }
-}
-
-// function stopwatchTime(seconds, milliseconds) {
-//   let minutes;
-//   let tenSeconds;
-//   let units;
-//   let tenthSeconds;
-//   let hundredthSeconds;
-//   minutes = (Math.floor(seconds / 60)).toString();
-//   tenSeconds = (Math.floor((seconds % 60)/10)).toString();
-//   units = ((seconds % 60)%10).toString();
-//   tenthSeconds = (Math.floor(milliseconds / 10)).toString();
-//   hundredthSeconds = (Math.floor(milliseconds % 10)).toString();
-//   return minutes.concat(":".concat(tenSeconds).concat(units.concat(":".concat(tenthSeconds.concat(hundredthSeconds)))));
-// }
-
-
 function draw() {
+  h = (w/2) / ratio;
+  y = h/2;
   if (dist(mouseX,mouseY, x, y) < r) {
     cursor('pointer');
   } else if (dist(mouseX,mouseY, x + w/8, y) < r/4) {
@@ -129,25 +105,30 @@ function draw() {
     cursor('default');
   }
   background(230);
+  //Draws gas analyser box
   push();
   fill('black');
   rect(x + SIZE/4.3, y - SIZE/3.175, SIZE/3.5, SIZE/5.5);
   pop();
   push();
+  //Draws speed dial outer
   fill('silver');
   ellipse(x,y,2*r,2*r);
   pop();
   push();
+  //Draws petrol switch
   fill('black');
   ellipse(x + w/8, y, r/2, r/2);
   pop();
   push();
+  //Draws petrol switch line
   stroke('silver');
   strokeWeight(2);
   var angle = fuel * PI/4;
   line(x + w/8, y, (x + w/8 + (r/4 * sin(angle))), (y - (r/4 *cos(angle))));
   pop();
   push();
+  //Fuel letters
   fill('black');
   textAlign(CENTER);
   textSize(SIZE/25);
@@ -156,15 +137,18 @@ function draw() {
   pop();
   push();
   fill('black');
+  //Speed switch inner
   ellipse(x,y,r,r);
   pop();
   push();
   fill(0);
+  //Stopwatch black
   ellipse(x + w/4,y, 2*r, 2*r);
   pop();
   push();
   fill('white');
-  ellipse(x + w/4, y, 2*r - 10, 2*r - 10);
+  //Stopwatch white
+  ellipse(x + w/4, y, 2*r - r/10, 2*r - r/10);
   pop();
   push();
   fill('red');
@@ -199,7 +183,7 @@ function draw() {
   pop();
   push();
   fill(0);
-  rect(x + w/4 + r, y -10, 10, 20);
+  rect(x + w/4 + r, y -r/10, r/10, r/5);
   pop();
   drawRivet(rivRad, rivRad);
   drawRivet(rivRad, h - rivRad);
@@ -227,20 +211,6 @@ function drawRivet(xCoord, yCoord) {
   line(xCoord, yCoord + rivRad/2, xCoord, yCoord - rivRad/2);
 }
 
-// function getSeconds(time) {
-//   return Math.trunc(time);
-// }
-//
-// function getMilliseconds(time) {
-//   var decimal = time % 1;
-//   return (100 *(decimal).toFixed(2))
-// }
-
-var timeChange = function(data) {
-  time = data.seconds;
-  redraw();
-};
-
 function mousePressed() {
   if (dist(mouseX,mouseY, x, y) < r) {
     if (mouseX - x < 0) {
@@ -265,7 +235,7 @@ function mousePressed() {
       id = petrol;
     }
     player.loadVideo(id[count])
-  }
+  }-
   gasImg.remove();
   if (fuel > 0) {
     gasImg = createImg((1400 + (100*count)).toString() + ' P Set 1 Gas.jpg');
@@ -294,21 +264,18 @@ function pauseStopwatch() {
   }
 }
 
-
 function resetStopwatch() {
   time = 0;
 }
-
-
 
 function alterButton() {
   button.style("font-size", SIZE/10);
   button.size(SIZE/5, SIZE/10);
   button.position((3 * w) / 4 - (button.width)/2, y + r);
-  addRowButton.style("font-size", SIZE/15);
+  addRowButton.style("font-size", SIZE/30);
   addRowButton.size(SIZE/5, SIZE/12);
   addRowButton.position((3 * w) / 4 + SIZE/45, y + r + SIZE/9);
-  clearButton.style("font-size", SIZE/15);
+  clearButton.style("font-size", SIZE/30);
   clearButton.size(SIZE/5, SIZE/12);
   clearButton.position((3 * w) / 4 - addRowButton.width - SIZE/45, y + r + SIZE/9);
   playButton.size(SIZE/10,SIZE/10);
@@ -340,33 +307,6 @@ var offBuffer = function(data) {
 
 player.on('bufferstart', onBuffer);
 player.on('bufferend', offBuffer);
-
-/*
-function windowResized() {
-  //Works for resizing vimeo but causes problems with p5 canvas
-  player.destroy().then(function() {
-    let options = {
-      id: id[count],
-      width: window.innerWidth / 2,
-      controls: false,
-      muted: true
-    };
-    player = new Vimeo.Player('fuel_panel', options);
-  });
-  player.ready().then(function() {
-    w = window.innerWidth;
-    player.w = w/2;
-    resizeCanvas(w/2, document.getElementById('fuel_panel').offsetHeight);
-    cnv.position(w / 2,0);
-    h = document.getElementById('fuel_panel').offsetHeight;
-    y = h/2;
-    x = window.innerWidth / 8;
-    SIZE = window.innerWidth / 3;
-    r = SIZE / 5;
-    rivRad = SIZE/15;
-    alterButton();
-  });
-}*/
 
 
 

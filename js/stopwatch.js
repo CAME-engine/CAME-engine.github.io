@@ -3,26 +3,33 @@ class StopwatchFunctions {
     }
 
     getSeconds(time) {
-        return Math.trunc(time);
+        if (typeof time != "number") {
+            throw new Error("time must be a number")
+        }else if(time < 0){
+            throw new Error("time must be positive")
+        }else {
+            return Math.trunc(time);
+        }
     }
 
     getMilliseconds(time) {
-        var decimal = time % 1;
-        return (100 * (decimal).toFixed(2));
+        if (typeof time != "number") {
+            throw new Error("time must be a number")
+        }else if(time < 0){
+            throw new Error("time must be positive")
+        }else {
+            this.decimal = time % 1;
+            return (100 * (this.decimal).toFixed(2));
+        }
     }
 
     stopwatchTime(seconds, milliseconds) {
-        let minutes;
-        let tenSeconds;
-        let units;
-        let tenthSeconds;
-        let hundredthSeconds;
-        minutes = (Math.floor(seconds / 60)).toString();
-        tenSeconds = (Math.floor((seconds % 60)/10)).toString();
-        units = ((seconds % 60)%10).toString();
-        tenthSeconds = (Math.floor(milliseconds / 10)).toString();
-        hundredthSeconds = (Math.floor(milliseconds % 10)).toString();
-        return minutes.concat(":".concat(tenSeconds).concat(units.concat(":".concat(tenthSeconds.concat(hundredthSeconds)))));
+        this.minutes = (Math.floor(seconds / 60)).toString();
+        this.tenSeconds = (Math.floor((seconds % 60)/10)).toString();
+        this.units = ((seconds % 60)%10).toString();
+        this.tenthSeconds = (Math.floor(milliseconds / 10)).toString();
+        this.hundredthSeconds = (Math.floor(milliseconds % 10)).toString();
+        return this.minutes.concat(":".concat(this.tenSeconds).concat(this.units.concat(":".concat(this.tenthSeconds.concat(this.hundredthSeconds)))));
     }
 }
 
